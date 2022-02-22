@@ -1,0 +1,1 @@
+# encurta.dor
