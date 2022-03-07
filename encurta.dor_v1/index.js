@@ -47,9 +47,27 @@ const databse = mongoose.connect(base_url)
 const userControler =  new UserController()
 
 
+app.get("/",(request, response)=>{
+    response.send("<h1>Rodando</h1>").status(200)
+})
 
-userControler.findByCPF()
+app.get("/api/find", (request, response)=>{
+   response = userControler.findById(request, response)
+})
 
+app.post("/api/new", (request, response)=>{
+    response = userControler.createUser(request, response)
+})
 
-console.log(user)
-mongoose.connection.close()
+app.post("/api/update/:id", (request, response)=>{
+    response = userControler.updateUser(request, response)
+})
+
+app.delete("/api/delete/:id", (request, response)=>{
+    response = userControler.deleteUser(request, response)
+})
+
+app.listen(port,()=>{
+    console.log(`Server running on ${port} port`)
+})
+

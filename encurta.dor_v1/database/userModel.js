@@ -8,7 +8,7 @@ import dotenv from "dotenv"
 dotenv.config();
 
 const userSchema = new mongoose.Schema({
-    id      : {type: String, required: true},
+    _id     : {type: String, required: true},
     name    : {type: String, required: true},
     cpf     : {type: String, required: true},
     email   : {type: String, required: true},
@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     phone   : {type: String, required: false},
     metaData: {
         created    : {type: Date, required: true},
-        modificated: {type: Date, required: false},
+        modificated: {type: String, required: false},
     },
     permissions: {
         perm: []

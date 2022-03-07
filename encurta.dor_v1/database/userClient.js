@@ -6,53 +6,78 @@
 
 */
 
-import dotenv from "dotenv"
 import usermodel from "./userModel.js"
 import mongoose from "mongoose"
 
 
-dotenv.config();
-
-const response = {"Data": "","status": "", "Date":  ""};
+const response = {"User": "","status": "", "Time":  ""};
 
 const db = {
-    async getUser(cpf){
+    async getUser(_id){
         try{
-            response.Data = await usermodel.findOne({cpf})
+            response.User = await usermodel.findOne({_id})
             response.status = true
-            response.Date = Date().toString()
         }
         catch(error){
-            response.Data = error;
+            response.User = error;
             response.status = false
         }
         finally{
-            return response;
-            mongoose.connection.close();
+            const time  = new Date().toISOString();
+            response.Time = time;
+            return response
+           
         }
         
     },
     async newUser(user){
         try{
-            response.Data = await usermodel.create(user)
+            response.User = await usermodel.create(user)
             response.status = true
-            response.Date = Date().toString()
         }
         catch(error){
-            response.Data = error;
+            response.User = error;
             response.status = false
         }
         finally{
+            const time  = new Date().toISOString();
+            response.Time = time;
             return response;
-            mongoose.connection.close();
         }
 
     },
-    async editUser(user){
+    async editUser(_id, newData){
+
+        try{
+            response.User = await usermodel.findByIdAndUpdate({_id}, newData, {new: true})
+            response.status = true
+        }
+        catch(error){
+            response.User = error;
+            response.status = false
+        }
+        finally{
+            const time  = new Date().toISOString();
+            response.Time = time;
+            return response;
+        }
+
 
     },
-    async deleteUser(user){
-
+    async deleteUser(_id){
+        try{
+            response.User = await usermodel.findByIdAndDelete({_id})
+            response.status = true
+        }
+        catch(error){
+            response.User = error;
+            response.status = false
+        }
+        finally{
+            const time  = new Date().toISOString();
+            response.Time = time;
+            return response;
+        } 
     }
 
 }
