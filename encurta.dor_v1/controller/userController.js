@@ -3,7 +3,6 @@
 
 
 import userClient from "../database/userClient.js"
-import userModel from "../database/userModel.js"
 import crypto from "crypto"
 import bcrypt from "bcryptjs"
 
@@ -32,21 +31,16 @@ class UserController{
     }
 
     async createUser(request, response){
-        const {name, cpf, email, password, phone} = request.body;
+        const {name, email, password,} = request.body;
 
-        if(name && cpf && email && password){
+        if(name && email && password){
             // -> Create new user object 
             const user = {
                 "_id": crypto.randomUUID(),
                 name, 
-                cpf, 
                 email, 
                 "password":  this.hashPassword(password),
-                "phone": phone, 
-                "metaData":{
-                    "created": Date(),
-                    "modificated": "Never"
-                 }
+                "metaData.created": Date.now()
             }
             const data = await userClient.newUser(user);
             return response.send(data).status(200)
@@ -60,7 +54,7 @@ class UserController{
     async updateUser(request, response){
         const {id} = request.params
 
-        const { name, cpf, email, password, phone} = request.body
+        const {name, email, password} = request.body
 
         if(!id)
             return response.send({"Message":"Error: missing data"}).status(400)
@@ -72,10 +66,10 @@ class UserController{
 
         const user = {
             name : name?            name : data.name,
-            cpf  : cpf?              cpf : data.cpf,
             email: email?          email : data.email,
             password: password? password : data.password,
-            phone: phone?          phone : data.phone
+            "metaData.modificated": Date.now()
+            
         }
 
         const res = await userClient.editUser(id, user)

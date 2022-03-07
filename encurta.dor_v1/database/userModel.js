@@ -10,20 +10,20 @@ dotenv.config();
 const userSchema = new mongoose.Schema({
     _id     : {type: String, required: true},
     name    : {type: String, required: true},
-    cpf     : {type: String, required: true},
     email   : {type: String, required: true},
     password: {type: String, required: true},
-    phone   : {type: String, required: false},
     metaData: {
         created    : {type: Date, required: true},
-        modificated: {type: String, required: false},
+        modificated: {type: Date, default: null},
     },
+    user_links:[String],
+    activeSection:[String],
     permissions: {
-        perm: []
+        perm: [String]
     }
 })
 
 
-const userModel = mongoose.model(process.env.COLLECTION, userSchema);
+const userModel = mongoose.model(process.env.COLLECTION_USERS, userSchema);
 
 export default userModel;

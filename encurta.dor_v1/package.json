@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "yarn nodemon index.js",
+    "dev": "nodemon insdex.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,8 +16,8 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.4.0",
-    "mongoose": "^6.2.3",
+    "mongoose": "^6.2.4",
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.15",
     "yarn": "^1.22.17"
   }
