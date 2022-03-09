@@ -12,10 +12,8 @@ const userSchema = new mongoose.Schema({
     name    : {type: String, required: true},
     email   : {type: String, required: true},
     password: {type: String, required: true},
-    metaData: {
-        created    : {type: Date, required: true},
-        modificated: {type: Date, default: null},
-    },
+    created    : {type: Date, required: true},
+    modificated: {type: Date, default: null},
     user_links:[String],
     activeSection:[String],
     permissions: {

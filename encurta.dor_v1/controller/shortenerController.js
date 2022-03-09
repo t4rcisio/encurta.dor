@@ -1,27 +1,70 @@
-
-
 import shortenerClient from "../database/shortenerClient.js"
+import crypto from "crypto"
+import userAgent from "user-agent"
+
+class ShortenerController {
+
+    async redirect(request, response) {
+        const {
+            hash
+        } = request.params
+
+        const data = await shortenerClient.getShortner(hash)
+        const userMetadata = userAgent.parse(request.headers["user-agent"])
+
+        const metadata = {
+            ip: request.ip,
+            language: request.headers["accept-language"],
+            userAgent: request.headers["user-agent"],
+            userMetadata,
+        }
 
 
-class ShortenerController{
+        if (!data.shortenerObject)
+            return response.send("<h1>Url not found</h1>").status(404)
 
-    async redirect(request, response){
-        const {url} =  request.params
-        const data = await shortenerClient.getShortner(url)
+        data.shortenerObject.hits++
+        data.shortenerObject.metaData.push(metadata)
+        await data.shortenerObject.save()
 
-        if(!data.Status)
-            return  response.send("<h1>Url not found</h1>").status(404)
+        return response.redirect(data.shortenerObject.link)
+    }
+
+    async create(request, response) {
+        const {
+            name,
+            link
+        } = request.body
+
+        if (!name || !link)
+            return response.send("Missing data").status(200)
+
+        const [hash] = crypto.randomUUID().split("-")
+        const shortener = {
+            _id: crypto.randomUUID(),
+            name: name,
+            user_owner: "aaaa",
+            link: link,
+            hash: hash,
+            hits: 0,
+            created: Date.now(),
+        }
+
+        console.log(shortener)
+
+        const data = await shortenerClient.createShortener(shortener)
+        return response.send(data).status(200)
+    }
+
+
+    async delete(request, response){
         
-
     }
 
-    async create(request, response){
-        const {name, }
+    async edit(request, response){
+        
     }
 
-    async viewMyShorteners(request, response){
-
-    }
 
 
 }

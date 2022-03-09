@@ -1,45 +1,50 @@
+import shortenerModel from "../model/shortenerModel.js";
 
-
-
-import shortenerModel from "./shortenerModel";
-
-const response = {"shortenerObject": null, "Status": null, "Date": null }
+const response = {
+    "shortenerObject": null,
+    "Status": null,
+    "Date": null
+}
 
 const db = {
-    async getShortner(url_shortened){
-        try{
-            response.shortenerObject = await shortenerModel.find({url_shortened})
+    async getShortner(hash) {
+        try {
+            response.shortenerObject = await shortenerModel.findOne({
+                hash
+            })
             response.Status = true
-        }catch(e){
+        } catch (e) {
             response.shortenerObject = e
             response.Status = false
-        }finally{
+        } finally {
             response.Date = Date.now()
             return response
         }
     },
 
-    async createShortener(shortener){
-        try{
+    async createShortener(shortener) {
+        try {
             response.shortenerObject = await shortenerModel.create(shortener)
             response.Status = true
-        }catch(e){
+        } catch (e) {
             response.shortenerObject = e
             response.Status = false
-        }finally{
+        } finally {
             response.Date = Date.now()
             return response
         }
     },
 
-    async deleteShortener(shortener){
-        try{
-            response.shortenerObject = await shortenerModel.deleteOne({_id})
+    async deleteShortener(shortener) {
+        try {
+            response.shortenerObject = await shortenerModel.deleteOne({
+                _id
+            })
             response.Status = true
-        }catch(e){
+        } catch (e) {
             response.shortenerObject = e
             response.Status = false
-        }finally{
+        } finally {
             response.Date = Date.now()
             return response
         }

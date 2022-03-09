@@ -30,7 +30,8 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import morgan from "morgan"
-
+import userRouter from "./routers/userRouter.js"
+import shortenerRouter from "./routers/shortenerRouter.js"
 
 // -> Configure to read .env file
 dotenv.config();
@@ -39,6 +40,7 @@ dotenv.config();
 const app = express()
 app.use(express.json())
 app.use(morgan("dev"))
+app.set('trust proxy', true) // to get client ip
 const port  = 3000
 
 // -> Connection to cloud database
@@ -48,8 +50,8 @@ const databse = mongoose.connect(base_url)
 
 
 
-const userControler =  new UserController()
-
+app.use("/api",userRouter)
+app.use(shortenerRouter)
 
 
 

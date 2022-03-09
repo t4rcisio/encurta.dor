@@ -1,89 +1,89 @@
-
-
-
-
 import userClient from "../database/userClient.js"
 import crypto from "crypto"
 import bcrypt from "bcryptjs"
 
-class UserController{
+class UserController {
 
-    hashPassword(password){
+    hashPassword(password) {
         const salt = bcrypt.genSaltSync(10);
         return bcrypt.hashSync(password, salt);
     }
 
 
-    async findById(request, response){
-        const {_id} = request.body;
-        
-        if(!_id)
-            return response.send({"Message":"Error: missing body data"}).status(400)
+    async createUser(request, response) {
+        const {
+            name,
+            email,
+            password,
+        } = request.body;
 
-
-        const  data = await userClient.getUser(_id);
-
-        if(!data.User)
-            data.status = false
-        
-        response.send(data).status(200)
-        //response.send({data}).status(200)    
-    }
-
-    async createUser(request, response){
-        const {name, email, password,} = request.body;
-
-        if(name && email && password){
+        if (name && email && password) {
             // -> Create new user object 
             const user = {
                 "_id": crypto.randomUUID(),
-                name, 
-                email, 
-                "password":  this.hashPassword(password),
-                "metaData.created": Date.now()
+                name,
+                email,
+                "password": this.hashPassword(password),
+                created: Date.now()
             }
             const data = await userClient.newUser(user);
             return response.send(data).status(200)
         }
 
-        return response.send({"Message":"Error: missing body data"}).status(400)
+        return response.send({
+            "Message": "Error: missing body data"
+        }).status(400)
 
-        
+
     }
 
-    async updateUser(request, response){
-        const {id} = request.params
+    async updateUser(request, response) {
+        const {
+            id
+        } = request.params
 
-        const {name, email, password} = request.body
+        const {
+            name,
+            email,
+            password
+        } = request.body
 
-        if(!id)
-            return response.send({"Message":"Error: missing data"}).status(400)
-        
+        if (!id)
+            return response.send({
+                "Message": "Error: missing data"
+            }).status(400)
+
         const data = await userClient.getUser(id)
 
-        if(!data.status)
-            return response.send({"Message":"Error: userId not found"}).status(400)
+        if (!data.status)
+            return response.send({
+                "Message": "Error: userId not found"
+            }).status(400)
 
         const user = {
-            name : name?            name : data.name,
-            email: email?          email : data.email,
-            password: password? password : data.password,
-            "metaData.modificated": Date.now()
-            
+            name: name ? name : data.name,
+            email: email ? email : data.email,
+            password: password ? password : data.password,
+            "modificated": Date.now()
+
         }
 
         const res = await userClient.editUser(id, user)
         return response.send(res).status(200)
     }
 
-    async deleteUser(request, response){
-        const {id} = request.params
+    async deleteUser(request, response) {
+        const {
+            id
+        } = request.params
 
-        if(!id)
-            return response.send({"Message":"Error: missing data"}).status(400)
-        
+        if (!id)
+            return response.send({
+                "Message": "Error: missing data"
+            }).status(400)
+
         const data = await userClient.deleteUser(id)
-        return response.send(data).status(200)    
+        return response.send(data).status(200)
     }
 
 }
