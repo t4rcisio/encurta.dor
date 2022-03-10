@@ -1,6 +1,9 @@
 import shortenerClient from "../database/shortenerClient.js"
+import userClient from "../database/userClient.js"
 import crypto from "crypto"
 import userAgent from "user-agent"
+import jsonwebtoken from "jsonwebtoken"
+
 
 class ShortenerController {
 
@@ -31,6 +34,11 @@ class ShortenerController {
     }
 
     async create(request, response) {
+
+        const {auth} = request.headers
+        const [,hashcode] = auth.split(" ")
+        const payload = jsonwebtoken.decode(hashcode)
+
         const {
             name,
             link
@@ -43,16 +51,18 @@ class ShortenerController {
         const shortener = {
             _id: crypto.randomUUID(),
             name: name,
-            user_owner: "aaaa",
+            user_owner: payload._id,
             link: link,
             hash: hash,
             hits: 0,
             created: Date.now(),
         }
 
-        console.log(shortener)
-
+        const dataUser = await userClient.findbyId(payload._id)
         const data = await shortenerClient.createShortener(shortener)
+        dataUser.User.user_links.push(shortener._id)
+        await dataUser.User.save() 
+
         return response.send(data).status(200)
     }
 

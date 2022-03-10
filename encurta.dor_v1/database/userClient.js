@@ -15,6 +15,23 @@ const response = {
 };
 
 const db = {
+
+    async findbyId(_id){
+        try {
+            response.User = await usermodel.findOne({
+                _id
+            })
+            response.status = true
+        } catch (error) {
+            response.User = error;
+            response.status = false
+        } finally {
+            response.Date = Date.now()
+            return response;
+
+        } 
+    },
+
     async getUser(email) {
         try {
             response.User = await usermodel.findOne({

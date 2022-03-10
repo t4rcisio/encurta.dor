@@ -14,6 +14,7 @@ class UserController {
     }
 
 
+
     async createUser(request, response) {
         const {
             name,
@@ -112,15 +113,13 @@ class UserController {
             return response.send("incorrect email or password")
         
         const userToken ={
-            _id : data.User._id,
-            name : data.User.name,
+            _id : data.User._id
         }
         const token = jsonwebtoken.sign(userToken, process.env.WEBTOKEN, {expiresIn:"3h"})
         data.User.activeSection = token
         await data.User.save()
 
-        response.setHeader("auth", "Bearer " + token)
-        return response.send(token).status(200)
+        response.setHeader("auth", "Bearer " + token).send(token).status(200)
     }
 
 

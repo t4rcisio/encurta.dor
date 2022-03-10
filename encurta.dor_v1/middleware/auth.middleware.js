@@ -1,30 +1,26 @@
-
 import jsonwebtoken from "jsonwebtoken"
 import dotenv from "dotenv"
-import userClient from "../database/userClient.js"
 
 dotenv.config()
 
-const AuthMiddleware = (request, response, next) =>{
+const AuthMiddleware = (request, response, next) => {
+    const {
+        auth
+    } = request.headers
 
-    const {auth} = request.headers
+    if ((request.url === "/api/login" || request.url === "/api/new") && request.method == "POST" || request.method == "GET")
+        return next()
 
-    if(request.url == "/api/login" || request.url == "/api/new" || request.url == "/:hash")
-        next()
+    if (!auth)
+        return response.send("autorization not found")
 
-    
-    const [,hash] = auth.split(' ')
-    try{
-        const payload = jsonwebtoken.verify(hash, process.env.WEBTOKEN)
+    const [, hash] = auth.split(' ')
 
-    }catch(e){
-        return response.send("Invalid autentication").status(400)
+    try {
+        const vtoken = jsonwebtoken.verify(hash, process.env.WEBTOKEN)
+    } catch (e) {
+        return response.send("Unalthorized").status(401)
     }
-
-
-    
-
-    console.log("Autentication running")
     next()
 }
 
