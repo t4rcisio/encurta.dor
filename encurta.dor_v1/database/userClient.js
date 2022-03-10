@@ -15,10 +15,10 @@ const response = {
 };
 
 const db = {
-    async getUser(_id) {
+    async getUser(email) {
         try {
             response.User = await usermodel.findOne({
-                _id
+                email
             })
             response.status = true
         } catch (error) {
@@ -67,6 +67,22 @@ const db = {
         try {
             response.User = await usermodel.findByIdAndDelete({
                 _id
+            })
+            response.status = true
+        } catch (error) {
+            response.User = error;
+            response.status = false
+        } finally {
+
+            response.Date = Date.now()
+            return response;
+        }
+    },
+
+    async session(activeSection) {
+        try {
+            response.User = await usermodel.findOne({
+                activeSection
             })
             response.status = true
         } catch (error) {

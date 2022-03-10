@@ -1,7 +1,11 @@
 import userClient from "../database/userClient.js"
 import crypto from "crypto"
 import bcrypt from "bcryptjs"
+import dotenv from "dotenv"
+import jsonwebtoken from "jsonwebtoken";
 
+
+dotenv.config()
 class UserController {
 
     hashPassword(password) {
@@ -20,12 +24,17 @@ class UserController {
         if (name && email && password) {
             // -> Create new user object 
             const user = {
-                "_id": crypto.randomUUID(),
+                _id : crypto.randomUUID(),
                 name,
                 email,
-                "password": this.hashPassword(password),
+                password: this.hashPassword(password),
                 created: Date.now()
             }
+
+            const dataverify = await userClient.getUser(email)            
+            if(dataverify.User)
+                return response.send("This email already exist!").status(400)
+
             const data = await userClient.newUser(user);
             return response.send(data).status(200)
         }
@@ -33,8 +42,6 @@ class UserController {
         return response.send({
             "Message": "Error: missing body data"
         }).status(400)
-
-
     }
 
     async updateUser(request, response) {
@@ -64,7 +71,7 @@ class UserController {
             name: name ? name : data.name,
             email: email ? email : data.email,
             password: password ? password : data.password,
-            "modificated": Date.now()
+            modificated : Date.now()
 
         }
 
@@ -86,23 +93,37 @@ class UserController {
         return response.send(data).status(200)
     }
 
+    async login(request, response) {
+
+        const {
+            email,
+            password
+        } = request.body
+
+        if (!email || !password)
+            return response.send("Missing data").status(200)
+
+        const data = await userClient.getUser(email)
+
+        if (!data.User)
+            return response.send("incorrect email or password")
+
+        if (!bcrypt.compareSync(password, data.User.password))
+            return response.send("incorrect email or password")
+        
+        const userToken ={
+            _id : data.User._id,
+            name : data.User.name,
+        }
+        const token = jsonwebtoken.sign(userToken, process.env.WEBTOKEN, {expiresIn:"3h"})
+        data.User.activeSection = token
+        await data.User.save()
+
+        response.setHeader("auth", "Bearer " + token)
+        return response.send(token).status(200)
+    }
+
+
 }
 
 export default UserController
-
-
-/*
-    id      : {type: String, required: true},
-    name    : {type: String, required: true},
-    cpf     : {type: String, required: true},
-    email   : {type: String, required: true},
-    password: {type: String, required: true},
-    phone   : {type: String, required: false},
-    metaData: {
-        created    : {type: Date, required: true},
-        modificated: {type: Date, required: false},
-    },
-    permissions: {
-        perm: []
-    }
-*/

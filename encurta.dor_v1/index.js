@@ -32,6 +32,7 @@ import mongoose from "mongoose"
 import morgan from "morgan"
 import userRouter from "./routers/userRouter.js"
 import shortenerRouter from "./routers/shortenerRouter.js"
+import AuthMiddleware from "./middleware/auth.middleware.js"
 
 // -> Configure to read .env file
 dotenv.config();
@@ -49,7 +50,7 @@ const databse = mongoose.connect(base_url)
 
 
 
-
+app.use(AuthMiddleware)
 app.use("/api",userRouter)
 app.use(shortenerRouter)
 

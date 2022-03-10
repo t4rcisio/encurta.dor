@@ -10,6 +10,7 @@ const userControler = new UserController
 router.post("/new", userControler.createUser.bind(userControler))
 router.post("/update/:id", userControler.updateUser.bind(userControler))
 router.delete("/delete", userControler.deleteUser.bind(userControler))
+router.post("/login", userControler.login.bind(userControler))
 
 
 

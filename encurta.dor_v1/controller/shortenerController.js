@@ -65,6 +65,10 @@ class ShortenerController {
         
     }
 
+    async getShoerteners(request, response){
+        
+    }
+
 
 
 }
