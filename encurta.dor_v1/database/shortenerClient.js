@@ -25,6 +25,7 @@ const db = {
     async createShortener(shortener) {
         try {
             response.shortenerObject = await shortenerModel.create(shortener)
+
             response.Status = true
         } catch (e) {
             response.shortenerObject = e
@@ -35,7 +36,7 @@ const db = {
         }
     },
 
-    async deleteShortener(shortener) {
+    async deleteShortener(_id) {
         try {
             response.shortenerObject = await shortenerModel.deleteOne({
                 _id

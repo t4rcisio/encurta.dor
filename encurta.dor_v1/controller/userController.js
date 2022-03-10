@@ -1,4 +1,5 @@
 import userClient from "../database/userClient.js"
+import shortenerClient from "../database/shortenerClient.js"
 import crypto from "crypto"
 import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
@@ -13,6 +14,21 @@ class UserController {
         return bcrypt.hashSync(password, salt);
     }
 
+    athUser(request, response) {
+        const {
+            auth
+        } = request.headers
+        const [, hashcode] = auth.split(" ")
+        let payload
+
+        try {
+            payload = jsonwebtoken.verify(hashcode, process.env.WEBTOKEN)
+        } catch (e) {
+            return response.send("Error to verify token").status(401)
+        }
+
+        return payload
+    }
 
 
     async createUser(request, response) {
@@ -25,15 +41,15 @@ class UserController {
         if (name && email && password) {
             // -> Create new user object 
             const user = {
-                _id : crypto.randomUUID(),
+                _id: crypto.randomUUID(),
                 name,
                 email,
                 password: this.hashPassword(password),
                 created: Date.now()
             }
 
-            const dataverify = await userClient.getUser(email)            
-            if(dataverify.User)
+            const dataverify = await userClient.getUser(email)
+            if (dataverify.User)
                 return response.send("This email already exist!").status(400)
 
             const data = await userClient.newUser(user);
@@ -46,9 +62,12 @@ class UserController {
     }
 
     async updateUser(request, response) {
+
         const {
             id
         } = request.params
+
+        const auth = this.athUser(request, response)
 
         const {
             name,
@@ -56,12 +75,12 @@ class UserController {
             password
         } = request.body
 
-        if (!id)
+        if (!id || id != auth._id)
             return response.send({
                 "Message": "Error: missing data"
             }).status(400)
 
-        const data = await userClient.getUser(id)
+        const data = await userClient.getUser(auth._id)
 
         if (!data.status)
             return response.send({
@@ -72,7 +91,7 @@ class UserController {
             name: name ? name : data.name,
             email: email ? email : data.email,
             password: password ? password : data.password,
-            modificated : Date.now()
+            modificated: Date.now()
 
         }
 
@@ -81,16 +100,28 @@ class UserController {
     }
 
     async deleteUser(request, response) {
+
         const {
             id
         } = request.params
 
-        if (!id)
+        const auth = this.athUser(request, response)
+
+        if (!id || id != auth._id)
             return response.send({
                 "Message": "Error: missing data"
             }).status(400)
 
         const data = await userClient.deleteUser(id)
+
+        /*
+            Delete all user's shorteners
+        */
+        data.User.user_links.forEach(id => {
+            shortenerClient.deleteShortener(id)
+        })
+
+
         return response.send(data).status(200)
     }
 
@@ -111,11 +142,13 @@ class UserController {
 
         if (!bcrypt.compareSync(password, data.User.password))
             return response.send("incorrect email or password")
-        
-        const userToken ={
-            _id : data.User._id
+
+        const userToken = {
+            _id: data.User._id
         }
-        const token = jsonwebtoken.sign(userToken, process.env.WEBTOKEN, {expiresIn:"3h"})
+        const token = jsonwebtoken.sign(userToken, process.env.WEBTOKEN, {
+            expiresIn: "3h"
+        })
         data.User.activeSection = token
         await data.User.save()
 
