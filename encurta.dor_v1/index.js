@@ -1,38 +1,11 @@
-/*
-    -> npm init -y
-    -> change pkg.json config 
-        -> add : "type": "module"
-        -> add : "dev" : "yarn nodemon index.js"
-    -> install Express
-    -> install yanr
-    -> install nodemon
-*/
-/*
-import express from "express"
-import crypto from "crypto"
-import database from "./database/userClient.js"
-import userModel from "./database/userModel.js";
-
-const app = express();
-app.use(express.json)
-
-const port = 3000;
-
-app.get("/api/user", (request, response)=>{
-
-    const {cpf} = request.body
-    userModel.
-    database.getUser() 
-})
-*/
 
 import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import morgan from "morgan"
-import userRouter from "./routers/userRouter.js"
-import shortenerRouter from "./routers/shortenerRouter.js"
-import AuthMiddleware from "./middleware/auth.middleware.js"
+import userRouter from "./src/routers/userRouter.js"
+import shortenerRouter from "./src/routers/shortenerRouter.js"
+import AuthMiddleware from "./src/middleware/auth.middleware.js"
 
 // -> Configure to read .env file
 dotenv.config();
