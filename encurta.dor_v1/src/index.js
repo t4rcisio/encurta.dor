@@ -3,9 +3,9 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import morgan from "morgan"
-import userRouter from "./src/routers/userRouter.js"
-import shortenerRouter from "./src/routers/shortenerRouter.js"
-import AuthMiddleware from "./src/middleware/auth.middleware.js"
+import userRouter from "./routers/userRouter.js"
+import shortenerRouter from "./routers/shortenerRouter.js"
+import AuthMiddleware from "./middleware/auth.middleware.js"
 
 // -> Configure to read .env file
 dotenv.config();
